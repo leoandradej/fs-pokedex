@@ -8,6 +8,18 @@ import globals from 'globals';
 export default [
   { ignores: ['dist', 'node_modules'] },
   {
+    files: ['app.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
+    files: ['test/**/*.{js,jsx}'],
+    languageOptions: {
+      globals: globals.jest,
+    },
+  },
+  {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2020,
