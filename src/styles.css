@@ -50,6 +50,7 @@ footer {
   height: 150px;
   width: 150px;
   position: relative;
+  border-radius: 1rem;
 }
 
 .list-item-name {
@@ -60,6 +61,8 @@ footer {
   text-align: center;
   text-transform: capitalize;
   background-color: #eee;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
 }
 
 .links {
