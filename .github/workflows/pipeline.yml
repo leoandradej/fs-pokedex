@@ -31,6 +31,30 @@ jobs:
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK}}
+      - name: Notify success
+        if: ${{ success() && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: success
+          title: 'Deployment Successful!'
+          description: |
+            Commit: ${{ github.sha }}
+            Message: ${{ github.event.head_commit.message }}
+            Author: ${{ github.event.head_commit.author.name }}
+      - name: Notify failure
+        if: ${{ failure() }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: failure
+          title: 'Build Failed!'
+          description: |
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Message: ${{ github.event.head_commit.message }}
+            Author: ${{ github.event.head_commit.author.name }}
 
   tag_release:
     needs: [simple_deployment_pipeline]
