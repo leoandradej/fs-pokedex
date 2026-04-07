@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -20,14 +20,19 @@ jobs:
         run: npm install
       - name: Check style
         run: npm run eslint
-      - name: Run npm test
+      - name: Run tests
         run: npm run test
-      - name: Run npm build
+      - name: Build
         run: npm run build
-      - name: Install Playwright Browsers
+      - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
-      - name: Run Playwright tests
+      - name: Run e2e tests
         run: npm run test:e2e
+
+  deploy:
+    needs: [build_and_test]
+    runs-on: ubuntu-latest
+    steps:
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK}}
@@ -57,7 +62,7 @@ jobs:
             Author: ${{ github.event.head_commit.author.name }}
 
   tag_release:
-    needs: [simple_deployment_pipeline]
+    needs: [deploy]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
